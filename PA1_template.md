@@ -4,7 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
-
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
@@ -52,7 +52,8 @@ median(summary$total, na.rm = TRUE)
 ```r
 by_interval <- group_by(data, interval) %>%
     summarise(mean = mean(steps, na.rm = TRUE))
-plot(by_interval$interval, by_interval$mean, type = "l", xlab = "5-minute interval", ylab = "average number of steps over all days")
+plot(by_interval$interval, by_interval$mean, type = "l", xlab = "5-minute interval", 
+     ylab = "average number of steps over all days")
 ```
 
 ![plot of chunk timeseriesplot](figure/timeseriesplot-1.png) 
@@ -87,7 +88,8 @@ sum(is.na(data$steps))
 ```r
 tidydata <- data
 replace <- is.na(data$steps)
-tidydata$steps[replace] <- sapply(data$interval[replace], function(x) {by_interval[by_interval$interval == x, "mean"]})
+tidydata$steps[replace] <- sapply(data$interval[replace], 
+                                  function(x) {by_interval[by_interval$interval == x, "mean"]})
 sum(is.na(tidydata$steps))
 ```
 
@@ -97,6 +99,8 @@ sum(is.na(tidydata$steps))
 
 #### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ## What is mean total number of steps taken per day?
+
+*The red part of the histogram is the dataset with the missing observations.*
 
 ```r
 library(dplyr)
@@ -154,7 +158,8 @@ tidydata <- cbind(tidydata, dayType)
 library(lattice)
 by_interval <- group_by(tidydata, dayType, interval) %>%
     summarise(mean = mean(steps, na.rm = TRUE))
-xyplot(by_interval$mean~by_interval$interval|by_interval$dayType, xlab = "interval", ylab = "number of steps", type="l", layout = c(1,2))
+xyplot(by_interval$mean~by_interval$interval|by_interval$dayType, xlab = "interval", 
+       ylab = "number of steps", type="l", layout = c(1,2))
 ```
 
 ![plot of chunk timeseriesplotWeekdaysType](figure/timeseriesplotWeekdaysType-1.png) 
