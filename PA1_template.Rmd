@@ -4,7 +4,9 @@ output:
   html_document:
     keep_md: true
 ---
+
 # Reproducible Research: Peer Assessment 1
+==================================================
 
 ## Loading and preprocessing the data
 
@@ -18,7 +20,7 @@ data <- read.csv("activity.csv", stringsAsFactors=FALSE)
 library(dplyr)
 summary <- group_by(data, date) %>%
     summarise(total = sum(steps), mean = mean(steps), median = median(steps))
-hist(summary$total, xlab = "total number of steps per day", main="Histogram of number of steps per day")
+hist(summary$total, breaks = 10, xlab = "total number of steps per day", main="Histogram of number of steps per day")
 ```
 
 #### Mean of number of steps per day:
@@ -73,8 +75,8 @@ sum(is.na(tidydata$steps))
 library(dplyr)
 tidysummary <- group_by(tidydata, date) %>%
     summarise(total = sum(steps), mean = mean(steps), median = median(steps))
-hist(tidysummary$total, xlab = "total number of steps per day", main="Histogram of number of steps per day")
-hist(summary$total, col = "red", add = T)
+hist(tidysummary$total, breaks = 10, xlab = "total number of steps per day", main="Histogram of number of steps per day")
+hist(summary$total, breaks = 10, col = "red", add = T)
 ```
 
 *From the histogram we see that we get more days with the average number of steps. This indicates certain days have NA's on all observations, and since we skipped NA's in the first histogram, we now get more days reported.*
@@ -97,13 +99,22 @@ median(tidysummary$total, na.rm = TRUE)
 #### 1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
 ```{r}
-isWeekend <- function(d) {if(d == "Saturday"|| d == "Sunday") return("weekend") else "weekday"}
 
-tidydata$date <- as.Date(tidydata$date)
-days <- weekdays(tidydata$date)
-dayType <- as.factor(sapply(days, isWeekend))
-tidydata <- cbind(tidydata, dayType)
+# could also use vectorised ifelse:
+tidydata <- mutate(tidydata, dayType = (ifelse(weekdays(as.Date(date)) == 'Saturday' | weekdays(as.Date(date)) == 'Sunday', 'weekend', 'weekday')))
+
+ tidydata$dayType <- as.factor(tidydata$dayType)
+
+
+#isWeekend <- function(d) {if(d == "Saturday"|| d == "Sunday") return("weekend") else "weekday"}
+
+#tidydata$date <- as.Date(tidydata$date)
+#days <- weekdays(tidydata$date)
+#dayType <- as.factor(sapply(days, isWeekend))
+#tidydata <- cbind(tidydata, dayType)
+
 ```
+
 
 #### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 

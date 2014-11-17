@@ -1,10 +1,7 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
 # Reproducible Research: Peer Assessment 1
+
+# Reproducible Research: Peer Assessment 1
+==================================================
 
 ## Loading and preprocessing the data
 
@@ -18,12 +15,28 @@ data <- read.csv("activity.csv", stringsAsFactors=FALSE)
 
 ```r
 library(dplyr)
-summary <- group_by(data, date) %>%
-    summarise(total = sum(steps), mean = mean(steps), median = median(steps))
-hist(summary$total, xlab = "total number of steps per day", main="Histogram of number of steps per day")
 ```
 
-![plot of chunk histogram](figure/histogram-1.png) 
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+summary <- group_by(data, date) %>%
+    summarise(total = sum(steps), mean = mean(steps), median = median(steps))
+hist(summary$total, breaks = 10, xlab = "total number of steps per day", main="Histogram of number of steps per day")
+```
+
+![](./PA1_template_files/figure-html/histogram-1.png) 
 
 #### Mean of number of steps per day:
 
@@ -56,7 +69,7 @@ plot(by_interval$interval, by_interval$mean, type = "l", xlab = "5-minute interv
      ylab = "average number of steps over all days")
 ```
 
-![plot of chunk timeseriesplot](figure/timeseriesplot-1.png) 
+![](./PA1_template_files/figure-html/timeseriesplot-1.png) 
 #### The 5-minute interval with the maximum number of steps, on average across all days:
 
 ```r
@@ -106,11 +119,11 @@ sum(is.na(tidydata$steps))
 library(dplyr)
 tidysummary <- group_by(tidydata, date) %>%
     summarise(total = sum(steps), mean = mean(steps), median = median(steps))
-hist(tidysummary$total, xlab = "total number of steps per day", main="Histogram of number of steps per day")
-hist(summary$total, col = "red", add = T)
+hist(tidysummary$total, breaks = 10, xlab = "total number of steps per day", main="Histogram of number of steps per day")
+hist(summary$total, breaks = 10, col = "red", add = T)
 ```
 
-![plot of chunk histogramtidy](figure/histogramtidy-1.png) 
+![](./PA1_template_files/figure-html/histogramtidy-1.png) 
 
 *From the histogram we see that we get more days with the average number of steps. This indicates certain days have NA's on all observations, and since we skipped NA's in the first histogram, we now get more days reported.*
 
@@ -143,13 +156,20 @@ median(tidysummary$total, na.rm = TRUE)
 
 
 ```r
-isWeekend <- function(d) {if(d == "Saturday"|| d == "Sunday") return("weekend") else "weekday"}
+# could also use vectorised ifelse:
+tidydata <- mutate(tidydata, dayType = (ifelse(weekdays(as.Date(date)) == 'Saturday' | weekdays(as.Date(date)) == 'Sunday', 'weekend', 'weekday')))
 
-tidydata$date <- as.Date(tidydata$date)
-days <- weekdays(tidydata$date)
-dayType <- as.factor(sapply(days, isWeekend))
-tidydata <- cbind(tidydata, dayType)
+ tidydata$dayType <- as.factor(tidydata$dayType)
+
+
+#isWeekend <- function(d) {if(d == "Saturday"|| d == "Sunday") return("weekend") else "weekday"}
+
+#tidydata$date <- as.Date(tidydata$date)
+#days <- weekdays(tidydata$date)
+#dayType <- as.factor(sapply(days, isWeekend))
+#tidydata <- cbind(tidydata, dayType)
 ```
+
 
 #### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
@@ -162,4 +182,4 @@ xyplot(by_interval$mean~by_interval$interval|by_interval$dayType, xlab = "interv
        ylab = "number of steps", type="l", layout = c(1,2))
 ```
 
-![plot of chunk timeseriesplotWeekdaysType](figure/timeseriesplotWeekdaysType-1.png) 
+![](./PA1_template_files/figure-html/timeseriesplotWeekdaysType-1.png) 
